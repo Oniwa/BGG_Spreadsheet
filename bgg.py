@@ -1,9 +1,11 @@
 from boardgamegeek import BGGClient, exceptions
+
 BGGItemNotFoundError = exceptions.BGGItemNotFoundError
 
 
 class BoardGame:
     def __init__(self):
+        self.id = None
         self.name = None
         self.mechanics = None
         self.min_players = None
@@ -16,50 +18,44 @@ class BoardGame:
         self.number_plays = None
         self.category = None
         self.personal_rating = None
+        self.average_rating = None
+        self.weight = None
 
-    def collection_to_game(self, game):
-        self.name = game.name
-        self.min_players = game.minplayers
-        self.max_players = game.maxplayers
-        self.number_plays = game.numplays
-        game = bgg.game(self.name)
-        #TODO: find game by ID because Ca$h 'n Guns (Second Edition) causes an exception
-        self.year = game.yearpublished
+    def collection_to_game(self, personal_game, db_game):
+        self.name = personal_game.name
+        self.min_players = personal_game.minplayers
+        self.max_players = personal_game.maxplayers
+        self.number_plays = personal_game.numplays
+        self.id = personal_game.id
+        self.personal_rating = personal_game.rating
+        self.year = db_game.yearpublished
+        self.weight = db_game.stats['averageweight']
+        self.bgg_rank = db_game.stats['ranks'][0]['value']
+        self.mechanics = ', '.join(db_game.mechanics)
+        self.average_rating = db_game.stats['average']
+
 
 bgg = BGGClient()
 
-# collection = bgg.collection('Brojn')
-#
-# for item in collection:
-#     print(item.name)
+collection = bgg.collection('Oniwa', exclude_subtype='boardgameexpansion', own=True)
+foo = []
 
-# foo = bgg.collection('Oniwa', exclude_subtype='boardgameexpansion')
-#
-# for item in foo:
-#     print(item.name)
-#
-# print(len(foo))
-#
-# class TestJunk:
-#     def __init__(self):
-#         self.junk = None
-#
-#     def foo(self, junk):
-#         self.junk = junk
-#
-# a = [TestJunk.foo('a'), TestJunk.foo('b')]
-#
-# for item in a:
-#     print(item.junk)
-
-collection = bgg.collection('Oniwa', exclude_subtype='boardgameexpansion')
-games = []
+game_id = []
 
 for item in collection:
+    game_id.append(item.id)
+
+games = bgg.game_list(game_id)
+
+for personal_game, db_game in zip(collection, games):
     game = BoardGame()
-    game.collection_to_game(item)
-    games.append(game)
+    game.collection_to_game(personal_game, db_game)
+    foo.append(game)
 
-for item in games:
-    print(item.year)
-
+print('Name, BGG Rank, Average Rank, Personal Rank, Weight, Number Plays, Category, Mechanics, Min Players, Max Players, Suggested Players, Year Published, Purchase Date, Months Owned')
+for item in foo:
+    print(f'{item.name}, {item.bgg_rank}, {item.average_rating}, {item.personal_rating}, ' \
+          f'{item.weight}, {item.number_plays}, {item.category}, ' \
+          f'{item.mechanics}, {item.min_players}, {item.max_players}, ' \
+          f'{item.suggested_players}, {item.year}, {item.bought}, ' \
+          f'{item.months_owned}')
