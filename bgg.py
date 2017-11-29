@@ -44,7 +44,7 @@ class BoardGame:
 
 
 def csv_writer(data, path):
-    with open(path, "w") as csv_file:
+    with open(path, "w", newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
         for line in data:
             print(line)
