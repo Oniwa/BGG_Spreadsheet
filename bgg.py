@@ -1,3 +1,5 @@
+import csv
+
 from boardgamegeek import BGGClient, exceptions
 
 BGGItemNotFoundError = exceptions.BGGItemNotFoundError
@@ -34,7 +36,22 @@ class BoardGame:
         self.mechanics = ', '.join(db_game.mechanics)
         self.average_rating = db_game.stats['average']
 
+    def csv(self):
+        return [self.name, self.bgg_rank, self.average_rating, self.personal_rating,
+                self.weight, self.number_plays, self.category, self.mechanics,
+                self.min_players, self.max_players, self.suggested_players,
+                self.year, self.bought, self.months_owned]
 
+
+def csv_writer(data, path):
+    with open(path, "w") as csv_file:
+        writer = csv.writer(csv_file, delimiter=';')
+        for line in data:
+            print(line)
+            writer.writerow(line)
+
+
+# if __name__ is "__main__":
 bgg = BGGClient()
 
 collection = bgg.collection('Oniwa', exclude_subtype='boardgameexpansion', own=True)
@@ -52,10 +69,13 @@ for personal_game, db_game in zip(collection, games):
     game.collection_to_game(personal_game, db_game)
     foo.append(game)
 
-print('Name, BGG Rank, Average Rank, Personal Rank, Weight, Number Plays, Category, Mechanics, Min Players, Max Players, Suggested Players, Year Published, Purchase Date, Months Owned')
+csv_data =[]
+csv_data.append('Name, BGG Rank, Average Rank, Personal Rank, Weight, '
+                'Number Plays, Category, Mechanics, Min Players, Max Players, '
+                'Suggested Players, Year Published, Purchase Date, '
+                'Months Owned'.split(','))
+
 for item in foo:
-    print(f'{item.name}, {item.bgg_rank}, {item.average_rating}, {item.personal_rating}, ' \
-          f'{item.weight}, {item.number_plays}, {item.category}, ' \
-          f'{item.mechanics}, {item.min_players}, {item.max_players}, ' \
-          f'{item.suggested_players}, {item.year}, {item.bought}, ' \
-          f'{item.months_owned}')
+    csv_data.append(item.csv())
+
+csv_writer(csv_data, './board_games.csv')
