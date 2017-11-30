@@ -30,15 +30,15 @@ for personal_game, db_game in zip(collection, games):
     foo.append(game)
 
 
-csv_data = 'Name, BGG Rank, Average Rank, Personal Rank, Weight, ' \
-           'Number Plays, Category, Mechanics, Min Players, Max Players, ' \
-           'Suggested Players, Year Published, Purchase Date, ' \
-           'Months Owned'.split(',')
+csv_data = [['Name', 'BGG Rank', 'Average Rank', 'Personal Rank', 'Weight',
+            'Number Plays', 'Category', 'Mechanics', 'Min Players',
+            'Max Players', 'Suggested Players', 'Year Published',
+            'Purchase Date', 'Months Owned']]
 
 for item in foo:
     csv_data.append(item.csv())
 
-
+print(csv_data)
 cwd = os.getcwd()
 data_dir = cwd + '\\data\\board_games.csv'
 
