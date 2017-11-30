@@ -1,1 +1,4 @@
 .idea/
+client_secret.json
+lib/__pycache__/
+*.csv
