@@ -1,0 +1,1 @@
+This project is based on inspiration from http://www.meeplemountain.com/articles/why-you-should-limit-your-board-game-collection/

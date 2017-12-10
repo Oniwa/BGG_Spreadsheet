@@ -29,7 +29,7 @@ for personal_game, db_game in zip(collection, games):
     game.collection_to_game(personal_game, db_game)
     foo.append(game)
 
-
+# TODO: Change Average rank and personal rank to rating and add a personal rank field
 csv_data = [['Name', 'BGG Rank', 'Average Rank', 'Personal Rank', 'Weight',
             'Number Plays', 'Category', 'Mechanics', 'Min Players',
             'Max Players', 'Suggested Players', 'Year Published',
